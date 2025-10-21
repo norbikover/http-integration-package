@@ -4,5 +4,10 @@
   "version": "1.0.0",
   "dependencies": {
     "com.unity.nuget.newtonsoft-json": "3.2.1"
+  },
+  "author": {
+    "name": "Kortex",
+    "email": "office@kortexhub.com",
+    "url": "https://www.kortexhub.com/"
   }
 }
