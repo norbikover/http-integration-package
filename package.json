@@ -1,7 +1,7 @@
 {
   "name": "com.kortex.http-integration",
   "displayName": "Http Integration",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "dependencies": {
     "com.unity.nuget.newtonsoft-json": "3.2.1" 
   }
