@@ -42,9 +42,13 @@ namespace HttpIntegration
             if (_serverStarted) return;
             _serverStarted = true;
 
+            string localIp = GetLocalIPAddress();
+
             _listener = new HttpListener();
-            _listener.Prefixes.Add($"http://{GetLocalIPAddress()}:{port}/");
+            _listener.Prefixes.Add($"http://127.0.0.1:{port}/");
             _listener.Prefixes.Add($"http://localhost:{port}/");
+            if (!string.Equals(localIp, "127.0.0.1")) _listener.Prefixes.Add($"http://{GetLocalIPAddress()}:{port}/");
+            
             _listener.Start();
             _ = ListenLoop();
             if (debugLog) Debug.Log($"HTTP server running on port {port}. Local ip: {GetLocalIPAddress()}");
