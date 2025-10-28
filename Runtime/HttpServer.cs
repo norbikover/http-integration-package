@@ -47,7 +47,7 @@ namespace HttpIntegration
             _listener.Prefixes.Add($"http://localhost:{port}/");
             _listener.Start();
             _ = ListenLoop();
-            if (debugLog) Debug.Log($"HTTP server running on port {port}");
+            if (debugLog) Debug.Log($"HTTP server running on port {port}. Local ip: {GetLocalIPAddress()}");
         }
 
         public void Register(string path, Func<HttpListenerRequest, Task<HttpResponse>> handler)
