@@ -12,6 +12,18 @@ namespace HttpIntegration
 {
     public class HttpServer : MonoBehaviour
     {
+        #region Singleton pattern.
+        private static HttpServer _instance;
+        public static HttpServer Instance
+        {
+            get
+            {
+                return _instance ?? (_instance = FindAnyObjectByType<HttpServer>());
+            }
+        }
+
+        #endregion
+
         [SerializeField] private int port = 8080;
         [SerializeField] private bool debugLog = true;
 
@@ -19,23 +31,7 @@ namespace HttpIntegration
         private readonly ConcurrentDictionary<string, Func<HttpListenerRequest, Task<HttpResponse>>> _routes =
             new ConcurrentDictionary<string, Func<HttpListenerRequest, Task<HttpResponse>>>();
 
-        public static HttpServer Instance { get; private set; }
-
         private bool _serverStarted = false;
-
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-                return;
-            }
-        }
 
         public void StartServer()
         {
@@ -105,7 +101,14 @@ namespace HttpIntegration
             res.Close();
         }
 
-        private void OnDestroy() => _listener?.Stop();
+        private void OnDestroy() 
+        {
+            if(_listener != null)
+            {
+                _listener.Stop();
+                _listener.Close();
+            }
+        }
 
         // ---------- Helper utilities ----------
         public static async Task<T> ReadJsonAsync<T>(HttpListenerRequest req)
