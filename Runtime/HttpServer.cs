@@ -60,7 +60,7 @@ namespace HttpIntegration
 
         private async Task ListenLoop()
         {
-            while (_listener.IsListening)
+            while (_listener != null && _listener.IsListening)
             {
                 try
                 {
@@ -107,6 +107,7 @@ namespace HttpIntegration
             {
                 _listener.Stop();
                 _listener.Close();
+                _listener = null;
             }
         }
 
