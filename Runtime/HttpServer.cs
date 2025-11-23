@@ -105,6 +105,7 @@ namespace HttpIntegration
         {
             if(_listener != null)
             {
+                Debug.Log("Destroy Http server");
                 _listener.Stop();
                 _listener.Close();
                 _listener = null;
