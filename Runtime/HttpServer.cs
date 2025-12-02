@@ -12,15 +12,6 @@ namespace HttpIntegration
 {
     public class HttpServer : MonoBehaviour
     {
-
-        [Serializable]
-        public class HttpResponse
-        {
-            public int StatusCode;
-            public string ResponseMessage;
-            public HttpResponse(int code = 200, string message = "") { StatusCode = code; ResponseMessage = message; }
-        }
-
         #region Singleton pattern.
         private static HttpServer _instance;
         public static HttpServer Instance
