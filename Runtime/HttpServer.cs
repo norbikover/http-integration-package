@@ -12,6 +12,15 @@ namespace HttpIntegration
 {
     public class HttpServer : MonoBehaviour
     {
+
+        [Serializable]
+        public class HttpResponse
+        {
+            public int StatusCode;
+            public string ResponseMessage;
+            public HttpResponse(int code = 200, string message = "") { StatusCode = code; ResponseMessage = message; }
+        }
+
         #region Singleton pattern.
         private static HttpServer _instance;
         public static HttpServer Instance
@@ -24,8 +33,8 @@ namespace HttpIntegration
 
         #endregion
 
-        [SerializeField] private int port = 8080;
-        [SerializeField] private bool debugLog = true;
+        [SerializeField] private int _port = 30004; // Avoid 8080 cause it might be used by other services too.
+        [SerializeField] private bool _debugLog = true;
 
         private HttpListener _listener;
         private readonly ConcurrentDictionary<string, Func<HttpListenerRequest, Task<HttpResponse>>> _routes =
@@ -41,19 +50,19 @@ namespace HttpIntegration
             string localIp = GetLocalIPAddress();
 
             _listener = new HttpListener();
-            _listener.Prefixes.Add($"http://127.0.0.1:{port}/");
-            _listener.Prefixes.Add($"http://localhost:{port}/");
-            if (!string.Equals(localIp, "127.0.0.1")) _listener.Prefixes.Add($"http://{GetLocalIPAddress()}:{port}/");
+            _listener.Prefixes.Add($"http://127.0.0.1:{_port}/");
+            _listener.Prefixes.Add($"http://localhost:{_port}/");
+            if (!string.Equals(localIp, "127.0.0.1")) _listener.Prefixes.Add($"http://{GetLocalIPAddress()}:{_port}/");
             
             _listener.Start();
             _ = ListenLoop();
-            if (debugLog) Debug.Log($"HTTP server running on port {port}. Local ip: {GetLocalIPAddress()}");
+            if (_debugLog) Debug.Log($"HTTP server running on port {_port}. Local ip: {GetLocalIPAddress()}");
         }
 
         public void Register(string path, Func<HttpListenerRequest, Task<HttpResponse>> handler)
         {
             _routes[path] = handler;
-            if (debugLog) Debug.Log($"Registered endpoint {path}");
+            if (_debugLog) Debug.Log($"Registered endpoint {path}");
         }
 
         public void Unregister(string path) => _routes.TryRemove(path, out _);
@@ -69,7 +78,7 @@ namespace HttpIntegration
                 }
                 catch (Exception e)
                 {
-                    if (debugLog) Debug.Log($"Listener stopped: {e.Message}");
+                    if (_debugLog) Debug.Log($"Listener stopped: {e.Message}");
                 }
             }
         }
@@ -127,13 +136,9 @@ namespace HttpIntegration
                     return ip.ToString();
             return "127.0.0.1";
         }
-    }
 
-    [Serializable]
-    public class HttpResponse
-    {
-        public int StatusCode;
-        public string ResponseMessage;
-        public HttpResponse(int code = 200, string message = "") { StatusCode = code; ResponseMessage = message; }
+        #region Getters
+        public int Port => _port;
+        #endregion
     }
 }
