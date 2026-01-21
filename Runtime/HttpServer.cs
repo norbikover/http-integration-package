@@ -41,10 +41,10 @@ namespace HttpIntegration
             string localIp = GetLocalIPAddress();
 
             _listener = new HttpListener();
-            _listener.Prefixes.Add($"http://127.0.0.1:{_port}/");
-            _listener.Prefixes.Add($"http://localhost:{_port}/");
-            if (!string.Equals(localIp, "127.0.0.1")) _listener.Prefixes.Add($"http://{GetLocalIPAddress()}:{_port}/");
-            
+            // _listener.Prefixes.Add($"http://127.0.0.1:{_port}/");
+            // _listener.Prefixes.Add($"http://localhost:{_port}/");
+            // if (!string.Equals(localIp, "127.0.0.1")) _listener.Prefixes.Add($"http://{GetLocalIPAddress()}:{_port}/");
+            _listener.Prefixes.Add($"http://+:{_port}/");
             _listener.Start();
             _ = ListenLoop();
             if (_debugLog) Debug.Log($"HTTP server running on port {_port}. Local ip: {GetLocalIPAddress()}");
