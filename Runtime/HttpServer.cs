@@ -38,8 +38,6 @@ namespace HttpIntegration
             if (_serverStarted) return;
             _serverStarted = true;
 
-            string localIp = GetLocalIPAddress();
-
             _listener = new HttpListener();
             // _listener.Prefixes.Add($"http://127.0.0.1:{_port}/");
             // _listener.Prefixes.Add($"http://localhost:{_port}/");
@@ -122,9 +120,17 @@ namespace HttpIntegration
 
         private string GetLocalIPAddress()
         {
-            foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                    return ip.ToString();
+            try
+            {
+                foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                        return ip.ToString();
+            }
+            catch (Exception e)
+            {
+                if (_debugLog) Debug.Log($"Error getting local IP address: {e.Message}");
+            }
+
             return "127.0.0.1";
         }
 
