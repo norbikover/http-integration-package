@@ -10,29 +10,23 @@ namespace HttpIntegration
     {
         #region Singleton pattern.
         private static HttpService _instance;
-        public static HttpService Instance
-        {
-            get
-            {
-                return _instance ?? (_instance = FindAnyObjectByType<HttpService>());
-            }
-        }
-
+        public static HttpService Instance => _instance != null ? _instance : (_instance = FindAnyObjectByType<HttpService>());
         #endregion
 
         private const string SERVER_URL = "http://localhost:3000/api";
 
-        public async Task<string> SendRequestAsync(string postfix, HttpMethod method, string serverUrl = SERVER_URL)
+        public async Task<string> SendRequestAsync(string postfix, HttpMethod method, string serverUrl = SERVER_URL, int timeoutSeconds = 10)
         {
-            return await SendRequestAsync<object>(postfix, method, default, serverUrl);
+            return await SendRequestAsync<object>(postfix, method, default, serverUrl, timeoutSeconds);
         }
 
-        public async Task<string> SendRequestAsync<T>(string postfix, HttpMethod method, T data = default, string serverUrl = SERVER_URL)
+        public async Task<string> SendRequestAsync<T>(string postfix, HttpMethod method, T data = default, string serverUrl = SERVER_URL, int timeoutSeconds = 10)
         {
             string url = serverUrl + postfix;
 
             using (UnityWebRequest request = CreateRequest(url, method, data))
             {
+                request.timeout = timeoutSeconds;
                 request.downloadHandler = new DownloadHandlerBuffer();
 
                 // Send the request and await completion.
@@ -41,6 +35,10 @@ namespace HttpIntegration
                 if (request.result == UnityWebRequest.Result.Success)
                 {
                     return request.downloadHandler.text;
+                }
+                else if (request.result == UnityWebRequest.Result.ConnectionError)
+                {
+                    throw new NetworkUnreachableException(request.error);
                 }
                 else if (!string.IsNullOrEmpty(request.downloadHandler.text))
                 {
@@ -83,5 +81,10 @@ namespace HttpIntegration
 
             return request;
         }
+    }
+
+    public class NetworkUnreachableException : Exception
+    {
+        public NetworkUnreachableException(string message) : base(message) { }
     }
 }
