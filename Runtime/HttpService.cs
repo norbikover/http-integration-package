@@ -36,10 +36,6 @@ namespace HttpIntegration
                 {
                     return request.downloadHandler.text;
                 }
-                else if (request.result == UnityWebRequest.Result.ConnectionError)
-                {
-                    throw new NetworkUnreachableException(request.error);
-                }
                 else if (!string.IsNullOrEmpty(request.downloadHandler.text))
                 {
                     throw new Exception(request.downloadHandler.text);
@@ -81,10 +77,5 @@ namespace HttpIntegration
 
             return request;
         }
-    }
-
-    public class NetworkUnreachableException : Exception
-    {
-        public NetworkUnreachableException(string message) : base(message) { }
     }
 }
